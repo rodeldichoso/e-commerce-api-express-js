@@ -51,6 +51,9 @@ const validateUserCreate = [
 
 const validatedUserLogin = [
     body('email')
+        .notEmpty()
+        .withMessage("Email is required")
+        .bail()
         .isEmail()
         .withMessage("Invalid Email Format")
         .bail()

@@ -1,0 +1,42 @@
+const db = require('../config/db');
+const { v4: uuidv4 } = require('uuid');
+
+
+/**
+ * Handle Category Creation
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.name - Category name
+ * @param {string} req.body.description - Category description
+ * @param {string} req.body.image_url - URL of the category image
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} Returns a JSON response with created category data and a success message
+ */
+
+const addCategory = async (req, res) => {
+    try {
+        const payload = {
+            category_id: uuidv4(),
+            name: req.body.name,
+            description: req.body.description,
+            image_url: req.body.image_url
+        }
+
+        await db('categories').insert(payload);
+
+        return res.status(201).json({
+            msg: 'Category created successfully',
+            category: payload
+        });
+
+    }
+    catch (error) {
+        console.log("Error", error);
+        return res.status(500).json({ error: "Something went wrong adding category" });
+    }
+}
+
+module.exports = {
+    addCategory
+}

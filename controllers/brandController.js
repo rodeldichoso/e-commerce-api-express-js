@@ -14,16 +14,18 @@ const { v4: uuidv4 } = require('uuid');
  */
 const addBrand = async (req, res) => {
     try {
-        const { brand_name, logo_url } = req.body;
+        const payload = {
+            brand_id: uuidv4(),
+            brand_name: req.body.brand_name,
+            logo_url: req.body.logo_url,
 
-        const uuid = uuidv4();
-        const newBrand = await db('brands').insert({
-            brand_id: uuid,
-            brand_name,
-            logo_url
+        }
+        await db('brands').insert(payload);
+
+        return res.status(201).json({
+            msg: 'Brand added successfully',
+            brand: payload
         });
-
-        return res.status(201).json({ brandId: uuid });
     }
     catch (error) {
         console.error("Error Inserting new Brand", error);
@@ -59,11 +61,14 @@ const getBrands = async (req, res) => {
  */
 const getOneBrand = async (req, res) => {
     try {
-        const { brandId } = req.params;
-        const brand = await db('brands').where('brand_id', brandId).first();
+        const { brand_id } = req.params;
+
+        const brand = await db('brands').where('brand_id', brand_id).first();
+
         if (!brand) {
             return res.status(404).json({ message: "Brand not found" });
         }
+
         return res.status(200).json(brand);
     }
     catch (error) {
@@ -82,19 +87,20 @@ const getOneBrand = async (req, res) => {
  */
 const deleteBrand = async (req, res) => {
     try {
-        const { brandId } = req.params;
-        const brand = await db('brands').where('brand_id', brandId).first();
+        const { brand_id } = req.params;
+        const brand = await db('brands').where('brand_id', brand_id).first();
+
         if (!brand) {
             return res.status(404).json({
                 error: "Brand not found" // Return a 404 error
             })
         }
 
-        await db('brands').where({ 'brand_id': brandId }).del();
+        await db('brands').where({ 'brand_id': brand_id }).del();
 
         return res.status(200).json({
             message: "Brand deleted successfully",
-            deletedBrand: brand
+            deleted_brand: brand
         });
     }
     catch (error) {
@@ -107,7 +113,7 @@ const deleteBrand = async (req, res) => {
  * Handle Editing Brand
  * 
  * @param {Object} req - Express request object
- * @param {string} req.params.brandId - Brand ID passed as a route parameter
+ * @param {string} req.params.brand_id - Brand ID passed as a route parameter
  * @param {string} req.body.brand_name - Updated name of brand
  * @param {string} req.body.logo_url - Updated logo url of the brand
  * @param {Object} res - Express request object
@@ -115,31 +121,34 @@ const deleteBrand = async (req, res) => {
  */
 const updateBrand = async (req, res) => {
     try {
-        const { brandId } = req.params;
-        const { brand_name, logo_url } = req.body;
+        const { brand_id } = req.params;
+        const payload = {
+            brand_name: req.body.brand_name,
+            logo_url: req.body.logo_url
+        };
 
-        const brandQuery = await db('brands').where({ brand_id: brandId });
+        const brand = await db('brands').where({ brand_id: brand_id }).first();
+
         if (!brand) {
             return res.status(404).json({ error: "Brand not found" });
         }
 
-        await brandQuery.update({
-            brand_name,
-            logo_url
-        });
-
-        const updateBrand = await brandQuery.first();
+        await db('brands').where({ brand_id: brand_id }).update(payload);
 
         return res.status(200).json({
             message: "Brand updated successfully",
-            updatedBrand: updateBrand
+            updatedBrand: {
+                brand_id: brand_id,
+                ...payload
+            }
         });
-    }
-    catch (error) {
-        console.error("Error updating Brand", error);
+
+    } catch (error) {
+        console.error("Error updating Brand:", error);
         return res.status(500).json({ message: "Error updating Brand" });
     }
-}
+};
+
 
 module.exports = {
     addBrand,

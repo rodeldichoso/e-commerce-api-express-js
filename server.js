@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const userRoutes = require('./routes/authRoutes');
 const brandRoutes = require('./routes/brandRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/users', userRoutes);
 app.use('/api/brands', brandRoutes);
+app.use('/api/categories', categoryRoutes);
 
 app.listen(port, () => {
     console.log(`App is running at: http://localhost:${port}`);

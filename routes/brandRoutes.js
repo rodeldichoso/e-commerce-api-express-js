@@ -10,8 +10,8 @@ router.use(authenticateToken);
 
 router.post('/', validateBrandInputs, validated, addBrand);
 router.get('/', getBrands);
-router.get('/:brandId', getOneBrand);
-router.delete('/:brandId', deleteBrand);
-router.put('/:brandId', updateBrand);
+router.get('/:brand_id', getOneBrand);
+router.delete('/:brand_id', deleteBrand);
+router.put('/:brand_id', updateBrand);
 
 module.exports = router;

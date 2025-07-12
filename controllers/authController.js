@@ -20,12 +20,12 @@ const registerUser = async (req, res) => {
         const { first_name, last_name, contact_number, email, password } = req.body;
 
         //Hash and make a uuid
-        const uuid = uuidv4();
+        const user_id = uuidv4();
         const hashedPassword = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUND));
 
         //Insert to database table
         await db('users').insert({
-            user_id: uuid,
+            user_id,
             last_name,
             first_name,
             contact_number,
@@ -35,12 +35,12 @@ const registerUser = async (req, res) => {
 
         //Sign a new access token
         const accessToken = jwt.sign({
-            userId: uuid, name: `${first_name} ${last_name}`
+            userId: user_id, name: `${first_name} ${last_name}`
         }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.JWT_EXPIRES_AT });
 
         //Sign a new refresh token
         const refreshToken = jwt.sign({
-            userId: uuid, name: `${first_name} ${last_name}`
+            userId: user_id, name: `${first_name} ${last_name}`
         }, process.env.REFRESH_JWT_SECRET_KEY, { expiresIn: process.env.REFRESH_JWT_EXPIRES_AT });
 
         //Set the cookie with refresh token
@@ -55,7 +55,7 @@ const registerUser = async (req, res) => {
         return res.status(201).json({
             msg: "User created successfully",
             user: {
-                user_id: uuid,
+                user_id: user_id,
                 first_name: first_name,
                 last_name: last_name,
                 contact_number: contact_number,
@@ -115,7 +115,7 @@ const loginUser = async (req, res) => {
         const response = {
             msg: "Login Successful",
             user: {
-                userId: user.user_id,
+                user_id: user.user_id,
                 first_name: user.first_name,
                 last_name: user.last_name
             },
