@@ -67,20 +67,35 @@ The server will start on the port specified in your `.env` file (default is 3000
 ## API Endpoints Overview
 
 - **Authentication**
-  - `/auth/login` - User login
-  - `/auth/register` - User registration
+  - `POST /auth/login` - User login
+  - `POST /auth/register` - User registration
   - Other auth-related endpoints in `controllers/authController.js` and `routes/authRoutes.js`
 
 - **Brand Management**
-  - `/brands` - CRUD operations for brands
+  - `POST /brands` - Create a new brand
+  - `GET /brands` - Get all brands
+  - `GET /brands/:brand_id` - Get a single brand by ID
+  - `PUT /brands/:brand_id` - Update a brand by ID
+  - `DELETE /brands/:brand_id` - Delete a brand by ID
   - Defined in `controllers/brandController.js` and `routes/brandRoutes.js`
 
-- Additional endpoints may exist for products, categories, orders, reviews, etc., based on the migrations and controllers.
+- **Category Management**
+  - `POST /categories` - Create a new category
+  - `GET /categories` - Get all categories
+  - `GET /categories/:category_id` - Get a single category by ID
+  - `PUT /categories/:category_id` - Update a category by ID
+  - `DELETE /categories/:category_id` - Delete a category by ID
+  - Defined in `controllers/categoryController` and `routes/categoryRoutes.js`
+
+- Additional endpoints may exist for products, orders, reviews, etc., based on the migrations and controllers.
 
 ## Middleware
 
 - Authentication middleware to protect routes (`middleware/authUser.js`)
-- Input validation middleware (`middleware/validate.js` and `middleware/inputValidator/`)
+- Input validation middleware (`middleware/validate.js` and `middleware/inputValidator/`), including:
+  - Brand validation (`brandValidator.js`)
+  - Category validation (`categoryValidator.js`)
+  - Authentication validation (`authValidator.js`)
 
 ## Project Structure
 

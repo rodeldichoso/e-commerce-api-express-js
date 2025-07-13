@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
     return res.status(200).json({ message: "App is running" });
 });
 
-app.use('/api/users', userRoutes);
+app.use('/api/auth', userRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/categories', categoryRoutes);
 
