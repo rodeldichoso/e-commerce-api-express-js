@@ -23,6 +23,7 @@
  *               - contact_number
  *               - email
  *               - password
+ *               - confirm_password
  *             properties:
  *               first_name:
  *                 type: string
@@ -33,6 +34,8 @@
  *               email:
  *                 type: string
  *               password:
+ *                 type: string
+ *               confirm_password:
  *                 type: string
  *     responses:
  *       201:
