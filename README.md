@@ -1,113 +1,97 @@
-# E-commerce Backend API
+# E-Commerce Backend API
 
-## Description
-This is a backend API for an E-commerce application built with Node.js. It uses Knex.js for database migrations and provides endpoints for authentication, brand management, and other e-commerce functionalities.
-
-## Prerequisites
-- Node.js (v14 or higher recommended)
-- MySQL or compatible database
-- npm (Node Package Manager)
+This is a backend API for an e-commerce platform. It provides endpoints for managing products, categories, brands, and user authentication.
 
 ## Installation
 
 1. Clone the repository:
+   ```bash
+   git clone <repository-url>
    ```
-   git clone https://github.com/rodeldichoso/e-commerce-api-express-js.git
-   cd E-commerce
+2. Navigate to the project directory:
+   ```bash
+   cd E-commerces
    ```
-
-2. Install dependencies:
-   ```
+3. Install dependencies:
+   ```bash
    npm install
    ```
-
-3. Create a `.env` file in the root directory and configure your environment variables. See `.env.example` for reference.
-
-## Environment Variables
-
-| Variable              | Description                          | Example                      |
-|-----------------------|----------------------------------|------------------------------|
-| `PORT`                | Port number for the server         | `3000`                       |
-| `DB_TYPE`             | Database client type (Knex)        | `mysql2`                     |
-| `DB_HOST`             | Database host                      | `localhost`                  |
-| `DB_USER`             | Database username                  | `root`                       |
-| `DB_PASSWORD`         | Database password                  | `your_password`              |
-| `DB_NAME`             | Database name                     | `e-commerce`                 |
-| `JWT_SECRET_KEY`      | Secret key for JWT authentication | `your_jwt_secret_key`        |
-| `JWT_EXPIRES_AT`      | JWT token expiration time          | `15m`                        |
-| `REFRESH_JWT_SECRET_KEY` | Secret key for refresh tokens    | `your_refresh_jwt_secret_key`|
-| `REFRESH_JWT_EXPIRES_AT` | Refresh token expiration time    | `7d`                         |
-| `BCRYPT_SALT_ROUND`   | Salt rounds for bcrypt hashing     | `10`                        |
-| `NODE_ENV`            | Node environment (development/production) | `development`          |
-| `CORS_ORIGIN`         | Allowed CORS origin URL            | `http://127.0.0.1:5500`     |
-
-## Database Setup
-
-1. Configure your database connection in `config/db.js` or via environment variables.
-
-2. Run database migrations using Knex:
-   ```
+4. Set up your database configuration in `knexfile.js` and `config/db.js`.
+5. Run database migrations:
+   ```bash
    npx knex migrate:latest
    ```
-
-3. To rollback the last batch of migrations:
-   ```
-   npx knex migrate:rollback
+6. Start the server:
+   ```bash
+   npm start
    ```
 
 ## Usage
 
-Start the server:
-```
-node server.js
-```
+The server runs on the configured port (default 3000). Use an API client like Postman or curl to interact with the endpoints.
 
-The server will start on the port specified in your `.env` file (default is 3000).
+## Authentication
 
-## API Endpoints Overview
+- Most routes require authentication via a JWT token.
+- Authentication is enforced using the `authenticateToken` middleware found in `middleware/authUser.js`.
+- This middleware checks for a valid JWT token in the `Authorization` header.
+- If the token is missing or invalid, access is denied with a 401 status.
+- Obtain a token by registering and logging in.
+- Include the token in the `Authorization` header as `Bearer <token>` for protected routes.
 
-- **Authentication**
-  - `POST /auth/login` - User login
-  - `POST /auth/register` - User registration
-  - Other auth-related endpoints in `controllers/authController.js` and `routes/authRoutes.js`
+## API Routes
 
-- **Brand Management**
-  - `POST /brands` - Create a new brand
-  - `GET /brands` - Get all brands
-  - `GET /brands/:brand_id` - Get a single brand by ID
-  - `PUT /brands/:brand_id` - Update a brand by ID
-  - `DELETE /brands/:brand_id` - Delete a brand by ID
-  - Defined in `controllers/brandController.js` and `routes/brandRoutes.js`
+### Auth Routes
 
-- **Category Management**
-  - `POST /categories` - Create a new category
-  - `GET /categories` - Get all categories
-  - `GET /categories/:category_id` - Get a single category by ID
-  - `PUT /categories/:category_id` - Update a category by ID
-  - `DELETE /categories/:category_id` - Delete a category by ID
-  - Defined in `controllers/categoryController` and `routes/categoryRoutes.js`
+| Method | Endpoint       | Description                  | Validation Middleware          |
+|--------|----------------|------------------------------|-------------------------------|
+| POST   | /register      | Register a new user           | `validateUserCreate`           |
+| POST   | /login         | Login user and get token      | `validatedUserLogin`           |
+| POST   | /refresh       | Refresh access token          | None                          |
 
-- Additional endpoints may exist for products, orders, reviews, etc., based on the migrations and controllers.
+### Product Routes
 
-## Middleware
+All product routes require authentication.
 
-- Authentication middleware to protect routes (`middleware/authUser.js`)
-- Input validation middleware (`middleware/validate.js` and `middleware/inputValidator/`), including:
-  - Brand validation (`brandValidator.js`)
-  - Category validation (`categoryValidator.js`)
-  - Authentication validation (`authValidator.js`)
+| Method | Endpoint           | Description                  | Validation Middleware          |
+|--------|--------------------|------------------------------|-------------------------------|
+| POST   | /products          | Add a new product             | `validateProductInputs`        |
+| GET    | /products          | Get all products              | None                          |
+| GET    | /products/:product_id | Get a single product by ID   | None                          |
+| PUT    | /products/:product_id | Update a product by ID       | None                          |
+| DELETE | /products/:product_id | Delete a product by ID       | None                          |
 
-## Project Structure
+### Category Routes
 
-- `controllers/` - Route handler logic
-- `routes/` - API route definitions
-- `middleware/` - Middleware for authentication and validation
-- `config/` - Configuration files including database connection
-- `migrations/` - Database migration files using Knex
-- `server.js` - Application entry point
-- `knexfile.js` - Knex configuration
+All category routes require authentication.
+
+| Method | Endpoint               | Description                      | Validation Middleware          |
+|--------|------------------------|---------------------------------|-------------------------------|
+| POST   | /categories            | Add a new category               | `validateCategoryInputs`       |
+| GET    | /categories            | Get all categories               | None                          |
+| GET    | /categories/:category_id | Get a single category by ID      | None                          |
+| PUT    | /categories/:category_id | Update a category by ID          | None                          |
+| DELETE | /categories/:category_id | Delete a category by ID          | None                          |
+| GET    | /categories/:category_id/products | Get all products of a category | None                          |
+
+### Brand Routes
+
+All brand routes require authentication.
+
+| Method | Endpoint           | Description                  | Validation Middleware          |
+|--------|--------------------|------------------------------|-------------------------------|
+| POST   | /brands            | Add a new brand               | `validateBrandInputs`          |
+| GET    | /brands            | Get all brands                | None                          |
+| GET    | /brands/:brand_id  | Get a single brand by ID      | None                          |
+| PUT    | /brands/:brand_id  | Update a brand by ID          | None                          |
+| DELETE | /brands/:brand_id  | Delete a brand by ID          | None                          |
+
+## Middleware and Validation
+
+- Authentication middleware (`authenticateToken`) protects most routes.
+- Input validation middleware is applied on POST and PUT routes to ensure data integrity.
+- Validation errors are handled and returned with appropriate messages.
 
 ## License
 
-This project is licensed under the MIT License.
-
+This project is licensed under the MIT License. See the LICENSE file for details.

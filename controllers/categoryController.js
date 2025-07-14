@@ -140,11 +140,34 @@ const deleteCategory = async (req, res) => {
     }
 }
 
+const getAllProductsOfCategory = async (req, res) => {
+    try {
+        const category_id = req.params.category_id;
+
+        const products = await db('products').where({ category_id }).select('*');
+
+        if (products.length === 0) {
+            return res.status(404).json({ error: "No products for this category yet" });
+        }
+
+        return res.status(200).json({
+            msg: "Products of category",
+            products: products
+        })
+    }
+    catch (error) {
+        console.log("Error", error);
+        return res.status(500).json({
+            error: "Something went wrong getting products of category"
+        });
+    }
+}
 
 module.exports = {
     addCategory,
     getCategories,
     getOneCategory,
     updateCategory,
-    deleteCategory
+    deleteCategory,
+    getAllProductsOfCategory
 }
